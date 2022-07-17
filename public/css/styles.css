@@ -1,0 +1,16 @@
+body {
+    width: 960px;
+    margin: 0px auto;
+    font-family: sans-serif;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.cell {
+    border: 1px solid black;
+    width: 100px;
+    aspect-ratio: 1/1;
+}

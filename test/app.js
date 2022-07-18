@@ -16,7 +16,7 @@ describe('/ticTacToe', () => {
     const app = createApp(appConfig, session, readFile);
     // No cookie is set
     request(app)
-      .get('/ticTacToe')
+      .get('/tic-tac-toe')
       .expect('location', '/login')
       .expect(302, done)
   });
@@ -31,9 +31,7 @@ describe('/login', () => {
       .expect(/Login Page/)
       .expect(200, done)
   });
-});
 
-describe('/login', () => {
   it('Should set cookie for new user', (done) => {
     const app = createApp(appConfig, session, readFile);
     // No cookie is set

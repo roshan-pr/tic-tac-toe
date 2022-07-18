@@ -7,46 +7,60 @@ const createPlayer = (name, nthPlayer) => {
 };
 
 class Game {
-  players;
-  currentPlayerIndex;
+  #players;
+  #currentPlayerIndex;
+  #maxPlayers;
 
-  constructor() {
-    this.players = [];
-    this.currentPlayerIndex = 0;
+  constructor(maxPlayers) {
+    this.#players = [];
+    this.#currentPlayerIndex = 0;
+    this.#maxPlayers = maxPlayers;
   }
 
   addPlayer(name) {
-    const player = createPlayer(name, this.players.length);
-    this.players.push(player);
+    if (this.isReady()) {
+      return;
+    }
+    const player = createPlayer(name, this.#players.length);
+    this.#players.push(player);
   }
 
-  isPossibleMove(move) {
-    return this.players.every(player => player.isPossibleMove(move));
+  #isPossibleMove(move) {
+    return this.#players.every(player => player.isPossibleMove(move));
   }
 
   nextPlayer() {
-    this.currentPlayerIndex++;
-    const numberOfPlayers = this.players.length;
-    this.currentPlayerIndex = this.currentPlayerIndex % numberOfPlayers;
+    this.#currentPlayerIndex++;
+    const numberOfPlayers = this.#players.length;
+    this.#currentPlayerIndex = this.#currentPlayerIndex % numberOfPlayers;
+    return this.#currentPlayerIndex;
+  }
+
+  isReady() {
+    return this.#players.length === this.#maxPlayers;
   }
 
   makeMove(move) {
-    const player = this.players[this.currentPlayerIndex];
-    if (this.isPossibleMove(move)) {
+    const player = this.#players[this.#currentPlayerIndex];
+    if (this.#isPossibleMove(move)) {
       player.logMove(move);
-      this.nextPlayer();
     }
   };
 
+  isOver() { return false; }
+
   status() {
-    const players = this.players.map(player => {
+    if (this.#players.length <= 0) {
+      return {};
+    }
+
+    const players = this.#players.map(player => {
       return player.getInfo();
     });
 
-    const { id } = this.players[this.currentPlayerIndex].getInfo();
+    const { id } = this.#players[this.#currentPlayerIndex].getInfo();
     return { currentPlayerId: id, players };
   }
-
 }
 
 module.exports = { Game };

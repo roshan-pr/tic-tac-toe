@@ -1,31 +1,35 @@
+const fs = require('fs');
 const express = require('express');
 const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
-const { serveLoginPage } = require('./loginHandler.js');
-const { serveTicTacToePage } = require('./ticTacToeHandler.js');
+const { addPlayer, serveLoginPage } = require('./loginHandler.js');
 const { assignSession } = require("./session.js");
+const { createGameRouter } = require("./gameHandler");
+const { Game } = require('./game.js');
 
-const auth = (req, res, next) => {
-  if (!req.session.isPopulated) {
-    res.redirect('/login');
-    return;
-  }
-  next();
+const redirectToGame = (req, res) => {
+  res.redirect('/tic-tac-toe');
+  res.end();
 };
+
 
 const createApp = (config, session, readFile) => {
   const { staticRoot, templateRoot } = config;
+  const maxPlayers = 2;
+  const game = new Game(maxPlayers);
+  const time = new Date().toLocaleString().split(' ')[1];
+  const logStream = fs.createWriteStream(`log/logRequest_${time}.txt`);
   const app = express();
-  app.use(morgan('tiny'));
+  app.use(morgan('tiny', { stream: logStream }));
 
   app.use(cookieSession(session));
-  app.post('/*', express.urlencoded({ extended: true }));
+  app.use(express.urlencoded({ extended: true }));
 
   app.get('/login', serveLoginPage(templateRoot, readFile));
-  app.post('/login', assignSession);
+  app.post('/login', assignSession, addPlayer(game), redirectToGame);
+  // app.use((req, res, next) => { console.log(req.game); next(); });
 
-  app.get('/ticTacToe', auth, serveTicTacToePage(templateRoot, readFile));
+  app.use('/tic-tac-toe', createGameRouter(game, templateRoot, readFile));
 
   app.use(express.static(staticRoot));
   return app;

@@ -1,4 +1,5 @@
 const express = require('express');
+const { Game } = require('./game.js');
 const { serveTicTacToePage } = require('./ticTacToeHandler.js');
 
 const auth = (req, res, next) => {
@@ -19,7 +20,18 @@ const gameHandler = game => (req, res) => {
   res.json(game.status());
 };
 
-const serveGameStatus = game => (req, res) => res.json(game.status());
+const serveGameStatus = game => (req, res) => {
+  const { currentPlayerId, players } = game.status();
+  const board = Array(9).fill('').map((_, index) => {
+    let cell = '';
+    players.forEach(({ symbol, moves }) => {
+      if (moves.includes(index + 1)) cell = symbol;
+    });
+    return cell;
+  });
+
+  res.json({ currentPlayerId, board });
+};
 
 const createGameRouter = (game, templateRoot, readFile) => {
   const gameRouter = express.Router();

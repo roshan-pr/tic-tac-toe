@@ -1,8 +1,7 @@
 const { Player } = require('./player.js');
 
-const createPlayer = (name, nthPlayer) => {
+const createPlayer = (id, name, nthPlayer) => {
   const symbols = ['x', 'o'];
-  const id = 'p'.concat(nthPlayer + 1);
   return new Player(id, name, symbols[nthPlayer]);
 };
 
@@ -17,11 +16,11 @@ class Game {
     this.#maxPlayers = maxPlayers;
   }
 
-  addPlayer(name) {
+  addPlayer(id, name) {
     if (this.isReady()) {
       return;
     }
-    const player = createPlayer(name, this.#players.length);
+    const player = createPlayer(id, name, this.#players.length);
     this.#players.push(player);
   }
 

@@ -1,5 +1,6 @@
 const addPlayer = game => (req, res, next) => {
-  game.addPlayer(req.body.name);
+  const { session: { id }, body: { name } } = req;
+  game.addPlayer(id, name);
   next();
 };
 

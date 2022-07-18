@@ -1,8 +1,11 @@
-const xhrRequest = (method, url, callback, body = '') => {
+const xhrRequest = (request, callback, body = '') => {
 	const xhr = new XMLHttpRequest();
 	xhr.onload = () => callback(xhr);
-	xhr.open(method, url);
-	xhr.setRequestHeader('content-type', 'application/x-www-form-urlencoded')
+
+	xhr.open(request.method, request.url);
+	const contentType = request['content-type'] || 'text/plain';
+	xhr.setRequestHeader('content-type', contentType);
+
 	xhr.send(body);
 };
 
@@ -12,9 +15,13 @@ const logResponse = xhr =>
 const sendMove = (event) => {
 	const move = event.target.id;
 	console.log(move);
+	const request = {
+		method: 'POST',
+		url: '/tic-tac-toe',
+		'content-type': 'application/x-www-form-urlencoded'
+	};
 	xhrRequest(
-		'POST',
-		'/tic-tac-toe',
+		request,
 		logResponse,
 		`move=${move}`
 	);
